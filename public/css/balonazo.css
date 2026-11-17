@@ -1,0 +1,75 @@
+body {
+    background-color: #090d16 !important;
+    color: #f1f5f9 !important;
+}
+
+.tarjeta-estadio {
+    background: linear-gradient(145deg, #111827, #0f172a);
+    border: 1px solid #1e293b;
+    border-radius: 1rem;
+}
+
+.tarjeta-cancha:hover {
+    border-color: #a3e635;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+.btn-neon {
+    background-color: #a3e635 !important;
+    color: #090d16 !important;
+    font-weight: 900 !important;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.btn-neon:hover {
+    background-color: #bef264 !important;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    background-color: #020617 !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+label,
+span.text-gray-600 {
+    color: #cbd5e1 !important;
+}
+
+button[type="submit"].inline-flex {
+    background-color: #a3e635 !important;
+    color: #090d16 !important;
+    font-weight: 800 !important;
+}
+
+.max-w-md {
+    max-width: 420px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    background-color: #111827 !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 1rem !important;
+    padding: 2rem !important;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+select {
+    background-color: #020617 !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+ul.text-red-600 li,
+.text-red-600 {
+    color: #fb7185 !important;
+    font-weight: bold !important;
+}
