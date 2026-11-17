@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cancha;
+use App\Models\Equipamiento;
 use App\Models\Pago;
 use App\Models\Penalizacion;
 use App\Models\Reservacion;
@@ -10,18 +12,35 @@ use Illuminate\Http\Request;
 
 class AdminLobbyController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $reservaciones = Reservacion::with(['cliente', 'cancha', 'equipamientos.equipamiento', 'pago', 'penalizaciones'])
-            ->orderByDesc('fecha')
-            ->orderBy('hora_inicio')
-            ->get();
+        $desde = $request->input('desde');
+        $hasta = $request->input('hasta');
 
-        $ingresosTotales = Pago::sum('monto');
+        // Consulta de reservaciones (filtrable por fechas)
+        $queryReservas = Reservacion::with(['cliente', 'cancha', 'equipamientos.equipamiento', 'pago', 'penalizaciones'])
+            ->orderByDesc('fecha')
+            ->orderBy('hora_inicio');
+
+        $queryPagos = Pago::query();
+
+        if ($desde && $hasta) {
+            $queryReservas->whereBetween('fecha', [$desde, $hasta]);
+            $queryPagos->whereBetween('created_at', [$desde . ' 00:00:00', $hasta . ' 23:59:59']);
+        }
+
+        $reservaciones = $queryReservas->get();
+        $ingresosTotales = $queryPagos->sum('monto');
         $reservasHoy = Reservacion::whereDate('fecha', today())->count();
         $pendientes = Reservacion::where('estado', 'pendiente')->count();
 
-        return view('admin.lobby', compact('reservaciones', 'ingresosTotales', 'reservasHoy', 'pendientes'));
+        $canchas = Cancha::all();
+        $equipamientos = Equipamiento::all();
+
+        return view('admin.lobby', compact(
+            'reservaciones', 'ingresosTotales', 'reservasHoy', 'pendientes',
+            'canchas', 'equipamientos', 'desde', 'hasta'
+        ));
     }
 
     public function confirmar($id)
@@ -80,5 +99,28 @@ class AdminLobbyController extends Controller
         $reserva->update(['estado' => 'pagada']);
 
         return back()->with('exito', "¡Pago en efectivo de \${$reserva->total_final} registrado en el lobby!");
+    }
+
+    // Activar o desactivar cancha (ej. por mantenimiento)
+    public function toggleCancha($id)
+    {
+        $cancha = Cancha::findOrFail($id);
+        $cancha->update(['activa' => ! $cancha->activa]);
+        return back()->with('exito', "Estado de {$cancha->nombre} actualizado.");
+    }
+
+    // Actualizar stock o precio de equipamiento
+    public function actualizarEquipo(Request $request, $id)
+    {
+        $request->validate([
+            'stock_total' => 'required|integer|min:0',
+            'precio_alquiler' => 'required|numeric|min:0',
+        ]);
+        $equipo = Equipamiento::findOrFail($id);
+        $equipo->update([
+            'stock_total' => $request->stock_total,
+            'precio_alquiler' => $request->precio_alquiler,
+        ]);
+        return back()->with('exito', "Inventario de {$equipo->nombre} actualizado.");
     }
 }

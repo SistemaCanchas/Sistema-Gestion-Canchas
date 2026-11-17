@@ -34,6 +34,9 @@ Route::middleware(['auth', 'admin'])->prefix('lobby')->group(function () {
     Route::patch('/reservas/{id}/cancelar', [AdminLobbyController::class, 'cancelar'])->name('admin.cancelar');
     Route::post('/reservas/{id}/penalizar', [AdminLobbyController::class, 'penalizar'])->name('admin.penalizar');
     Route::post('/reservas/{id}/cobrar', [AdminLobbyController::class, 'cobrar'])->name('admin.cobrar');
+    Route::patch('/canchas/{id}/toggle', [AdminLobbyController::class, 'toggleCancha'])->name('admin.cancha.toggle');
+    Route::patch('/equipamiento/{id}', [AdminLobbyController::class, 'actualizarEquipo'])->name('admin.equipo.actualizar');
+
 });
 
 require __DIR__.'/auth.php';
